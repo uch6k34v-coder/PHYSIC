@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>⚛️ Кабинет физики · 7–11 класс</title>
+
+<style>
+  :root {
+    --primary: #6366f1;
+    --primary-dark: #4f46e5;
+    --card: rgba(255,255,255,0.07);
+    --text: #f1f5f9;
+    --text-dim: #94a3b8;
+    --accent: #22d3ee;
+    --danger: #ef4444;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: radial-gradient(ellipse at top, #1e1b4b 0%, #0f172a 60%, #020617 100%);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+  /* Красивый звездный фон */
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background-image:
+      radial-gradient(1px 1px at 15% 20%, #fff, transparent),
+      radial-gradient(1px 1px at 65% 75%, #fff, transparent),
+      radial-gradient(2px 2px at 85% 15%, #fff, transparent),
+      radial-gradient(1px 1px at 35% 85%, #fff, transparent),
+      radial-gradient(1.5px 1.5px at 90% 55%, #fff, transparent),
+      radial-gradient(1px 1px at 5% 60%, #fff, transparent);
+    opacity: 0.35;
+    animation: twinkle 6s ease-in-out infinite alternate;
+    pointer-events: none;
+    z-index: 0;
+  }
+  @keyframes twinkle { from { opacity: 0.15; } to { opacity: 0.45; } }
+
+  .app {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 40px 20px 100px;
+    position: relative;
+    z-index: 1;
+  }
+
+  header {
+    text-align: center;
+    margin-bottom: 48px;
+    animation: fadeDown 0.8s cubic-bezier(0.4,0,0.2,1);
+  }
+  @keyframes fadeDown {
+    from { opacity: 0; transform: translateY(-24px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  h1 {
+    font-size: clamp(2rem, 5vw, 3rem);
+    font-weight: 800;
+    letter-spacing: -1px;
+    background: linear-gradient(135deg, #818cf8 0%, #22d3ee 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .subtitle {
+    color: var(--text-dim);
+    margin-top: 12px;
+    font-size: 1.05rem;
+  }
+
+  .grades {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 40px;
+    animation: fadeIn 0.6s 0.2s backwards;
+  }
+  .grade-btn {
+    padding: 14px 32px;
+    background: var(--card);
+    border: 1px solid rgba(255,255,255,0.1);
+    color: var(--text);
+    border-radius: 14px;
+    cursor: pointer;
+    font-size: 1.05rem;
+    font-weight: 600;
+    transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
+    backdrop-filter: blur(10px);
+    font-family: inherit;
+  }
+  .grade-btn:hover {
+    transform: translateY(-3px);
+    border-color: var(--primary);
+    box-shadow: 0 10px 30px rgba(99,102,241,0.25);
+  }
+  .grade-btn.active {
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    border-color: transparent;
+    box-shadow: 0 8px 25px rgba(99,102,241,0.55);
+    transform: translateY(-2px);
+  }
+
+  .section { animation: fadeIn 0.5s ease; }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+  .section-title { font-size: 1.4rem; font-weight: 700; }
+  .section-title span { color: var(--accent); }
+  .section-title small {
+    color: var(--text-dim);
+    font-weight: 400;
+    font-size: 0.9rem;
+    margin-left: 6px;
+  }
+
+  .upload-btn {
+    padding: 12px 24px;
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    border: none;
+    color: white;
+    border-radius: 12px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 600;
+    transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
+    box-shadow: 0 4px 15px rgba(99,102,241,0.4);
+    font-family: inherit;
+  }
+  .upload-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(99,102,241,0.6);
+  }
+  .upload-btn:active { transform: translateY(0); }
+
+  .files {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+    gap: 16px;
+  }
+  .file-card {
+    background: var(--card);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 16px;
+    padding: 20px;
+    backdrop-filter: blur(10px);
+    transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
+    animation: cardIn 0.4s cubic-bezier(0.4,0,0.2,1) backwards;
+  }
+  @keyframes cardIn {
+    from { opacity: 0; transform: scale(0.92) translateY(12px); }
+    to   { opacity: 1; transform: scale(1) translateY(0); }
+  }
+  .file-card:hover {
+    transform: translateY(-4px);
+    border-color: var(--primary);
+    box-shadow: 0 12px 30px rgba(99,102,241,0.25);
+  }
+  .file-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    margin-bottom: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+  }
+  .file-name {
+    font-weight: 600;
+    word-break: break-word;
+    margin-bottom: 6px;
+    font-size: 0.95rem;
+    line-height: 1.35;
+  }
+  .file-meta {
+    font-size: 0.8rem;
+    color: var(--text-dim);
+    margin-bottom: 14px;
+  }
+  .file-actions { display: flex; gap: 8px; }
+  .btn-sm {
+    flex: 1;
+    padding: 8px 12px;
+    border-radius: 8px;
+    border: 1px solid rgba(255,255,255,0.15);
+    background: rgba(255,255,255,0.05);
+    color: var(--text);
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-weight: 500;
+    transition: all 0.2s;
+    font-family: inherit;
+  }
+  .btn-sm:hover {
+    background: rgba(255,255,255,0.15);
+    border-color: var(--primary);
+    transform: translateY(-1px);
+  }
+  .btn-sm.danger:hover {
+    background: rgba(239,68,68,0.2);
+    border-color: var(--danger);
+    color: #fca5a5;
+  }
+
+  .empty {
+    text-align: center;
+    padding: 80px 20px;
+    color: var(--text-dim);
+    animation: fadeIn 0.6s 0.2s backwards;
+  }
+  .empty-icon {
+    font-size: 64px;
+    margin-bottom: 16px;
+    opacity: 0.5;
+    animation: float 3s ease-in-out infinite;
+  }
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50%      { transform: translateY(-10px); }
+  }
+
+  .modal-overlay {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.75);
+    backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    z-index: 100;
+    animation: fadeIn 0.3s;
+  }
+  .modal {
+    background: linear-gradient(135deg, #1e293b, #0f172a);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 20px;
+    padding: 32px;
+    max-width: 500px;
+    width: 100%;
+    animation: modalIn 0.4s cubic-bezier(0.4,0,0.2,1);
+  }
+  @keyframes modalIn {
+    from { opacity: 0; transform: scale(0.9) translateY(20px); }
+    to   { opacity: 1; transform: scale(1) translateY(0); }
+  }
+  .modal h2 { margin-bottom: 8px; font-size: 1.5rem; }
+  .modal > p { color: var(--text-dim); margin-bottom: 24px; }
+  .dropzone {
+    border: 2px dashed rgba(255,255,255,0.2);
+    border-radius: 16px;
+    padding: 40px 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s;
+    margin-bottom: 16px;
+  }
+  .dropzone:hover, .dropzone.drag {
+    border-color: var(--primary);
+    background: rgba(99,102,241,0.1);
+    transform: scale(1.01);
+  }
+  .dropzone-icon { font-size: 48px; margin-bottom: 12px; }
+  .dropzone small {
+    color: var(--text-dim);
+    display: block;
+    margin-top: 8px;
+    font-size: 0.85rem;
+  }
+  #selectedList {
+    margin-bottom: 16px;
+    font-size: 0.9rem;
+    color: var(--accent);
+    min-height: 20px;
+  }
+  .modal-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+  }
+  .btn {
+    padding: 10px 22px;
+    border-radius: 10px;
+    border: 1px solid rgba(255,255,255,0.15);
+    background: rgba(255,255,255,0.05);
+    color: var(--text);
+    cursor: pointer;
+    font-size: 0.95rem;
+    font-weight: 500;
+    transition: all 0.2s;
+    font-family: inherit;
+  }
+  .btn:hover { background: rgba(255,255,255,0.1); }
+  .btn.primary {
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    border-color: transparent;
+  }
+  .btn.primary:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 15px rgba(99,102,241,0.5);
+  }
+  .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  .toast {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%) translateY(120px);
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    color: white;
+    padding: 14px 28px;
+    border-radius: 12px;
+    font-weight: 600;
+    box-shadow: 0 10px 30px rgba(99,102,241,0.5);
+    transition: transform 0.4s cubic-bezier(0.4,0,0.2,1);
+    z-index: 200;
+    font-size: 0.95rem;
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+  .toast.error { background: linear-gradient(135deg, #ef4444, #dc2626); }
+
+  @media (max-width: 600px) {
+    .grades { gap: 8px; }
+    .grade-btn { padding: 10px 20px; font-size: 0.9rem; }
+    .app { padding: 20px 16px 100px; }
+    .modal { padding: 24px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <header>
+    <h1>⚛️ Кабинет физики</h1>
+    <p class="subtitle">База материалов для учителя · 7–11 класс</p>
+  </header>
+
+  <div class="grades" id="grades"></div>
+  <div id="content"></div>
+</div>
+
+<script>
+// ============================================================
+// БАЗА ДАННЫХ (IndexedDB - хранит файлы локально в браузере)
+// ============================================================
+let db = null;
+
+function openDB() {
+  return new Promise((resolve, reject) => {
+    if (db) return resolve(db);
+    const req = indexedDB.open('physicsTeacherDB', 1);
+    req.onupgradeneeded = (e) => {
+      const database = e.target.result;
+      if (!database.objectStoreNames.contains('files')) {
+        const store = database.createObjectStore('files', { keyPath: 'id', autoIncrement: true });
+        store.createIndex('grade', 'grade', { unique: false });
+      }
+    };
+    req.onsuccess = (e) => { db = e.target.result; resolve(db); };
+    req.onerror = (e) => reject(e.target.error);
+  });
+}
+
+async function getFilesByGrade(grade) {
+  const database = await openDB();
+  return new Promise((resolve, reject) => {
+    const tx = database.transaction('files', 'readonly');
+    const idx = tx.objectStore('files').index('grade');
+    const req = idx.getAll(grade);
+    req.onsuccess = () => resolve(req.result.sort((a, b) => b.date - a.date));
+    req.onerror = () => reject(req.error);
+  });
+}
+
+async function addFiles(grade, files) {
+  const database = await openDB();
+  const tx = database.transaction('files', 'readwrite');
+  const store = tx.objectStore('files');
+  return new Promise((resolve, reject) => {
+    let count = 0;
+    const total = files.length;
+    if (total === 0) return resolve();
+    files.forEach((file) => {
+      const record = { grade, name: file.name, type: file.type, size: file.size, blob: file, date: Date.now() };
+      const req = store.add(record);
+      req.onsuccess = () => { count++; if (count === total) resolve(); };
+      req.onerror = () => reject(req.error);
+    });
+  });
+}
+
+async function getFile(id) {
+  const database = await openDB();
+  return new Promise((resolve, reject) => {
+    const tx = database.transaction('files', 'readonly');
+    const req = tx.objectStore('files').get(id);
+    req.onsuccess = () => resolve(req.result);
+    req.onerror = () => reject(req.error);
+  });
+}
+
+async function deleteFile(id) {
+  const database = await openDB();
+  return new Promise((resolve, reject) => {
+    const tx = database.transaction('files', 'readwrite');
+    const req = tx.objectStore('files').delete(id);
+    req.onsuccess = () => resolve();
+    req.onerror = () => reject(req.error);
+  });
+}
+
+// ============================================================
+// ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ
+// ============================================================
+function fileIcon(f) {
+  const ext = (f.name.split('.').pop() || '').toLowerCase();
+  const map = {
+    ppt: '📊', pptx: '📊', pdf: '📕', doc: '📘', docx: '📘',
+    xls: '📗', xlsx: '📗', jpg: '🖼️', jpeg: '🖼️', png: '🖼️',
+    gif: '🖼️', svg: '🖼️', webp: '🖼️', mp4: '🎬', avi: '🎬',
+    mov: '🎬', webm: '🎬', txt: '📄', md: '📄', zip: '🗜️',
+    rar: '🗜️', '7z': '🗜️', mp3: '🎵', wav: '🎵',
+  };
+  return map[ext] || '📎';
+}
+
+function fileColor(f) {
+  const ext = (f.name.split('.').pop() || '').toLowerCase();
+  if (['ppt', 'pptx'].includes(ext)) return 'linear-gradient(135deg,#f97316,#ea580c)';
+  if (ext === 'pdf') return 'linear-gradient(135deg,#ef4444,#dc2626)';
+  if (['doc', 'docx'].includes(ext)) return 'linear-gradient(135deg,#3b82f6,#2563eb)';
+  if (['xls', 'xlsx'].includes(ext)) return 'linear-gradient(135deg,#22c55e,#16a34a)';
+  if (['jpg','jpeg','png','gif','svg','webp'].includes(ext)) return 'linear-gradient(135deg,#a855f7,#7c3aed)';
+  if (['mp4','avi','mov','webm','mp3','wav'].includes(ext)) return 'linear-gradient(135deg,#ec4899,#db2777)';
+  return 'linear-gradient(135deg,#6366f1,#4f46e5)';
+}
+
+function formatSize(bytes) {
+  if (bytes < 1024) return bytes + ' Б';
+  if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' КБ';
+  return (bytes / 1024 / 1024).toFixed(1) + ' МБ';
+}
+
+function formatDate(ts) {
+  return new Date(ts).toLocaleDateString('ru-RU', { day: 'numeric', month: 'short', year: 'numeric' });
+}
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+}
+
+function toast(msg, isError = false) {
+  const el = document.createElement('div');
+  el.className = 'toast' + (isError ? ' error' : '');
+  el.textContent = msg;
+  document.body.appendChild(el);
+  requestAnimationFrame(() => el.classList.add('show'));
+  setTimeout(() => {
+    el.classList.remove('show');
+    setTimeout(() => el.remove(), 400);
+  }, 2500);
+}
+
+// ============================================================
+// ЛОГИКА ИНТЕРФЕЙСА
+// ============================================================
+const GRADES = [7, 8, 9, 10, 11];
+let currentGrade = 7;
+
+const gradesEl = document.getElementById('grades');
+GRADES.forEach((g) => {
+  const btn = document.createElement('button');
+  btn.className = 'grade-btn';
+  btn.textContent = g + ' класс';
+  btn.dataset.grade = g;
+  btn.onclick = () => switchGrade(g);
+  gradesEl.appendChild(btn);
+});
+
+function renderFiles(files) {
+  const content = document.getElementById('content');
+
+  if (files.length === 0) {
+    content.innerHTML = `
+      <div class="section">
+        <div class="section-header">
+          <h2 class="section-title">Материалы · <span>${currentGrade} класс</span></h2>
+          <button class="upload-btn" id="uploadBtn">+ Загрузить файл</button>
+        </div>
+        <div class="empty">
+          <div class="empty-icon">📚</div>
+          <p>Пока нет материалов для ${currentGrade} класса</p>
+          <p style="font-size:0.9rem; margin-top:8px;">Нажмите «Загрузить файл», чтобы добавить презентации и документы</p>
+        </div>
+      </div>`;
+  } else {
+    content.innerHTML = `
+      <div class="section">
+        <div class="section-header">
+          <h2 class="section-title">Материалы · <span>${currentGrade} класс</span> <small>(${files.length})</small></h2>
+          <button class="upload-btn" id="uploadBtn">+ Загрузить файл</button>
+        </div>
+        <div class="files" id="filesGrid"></div>
+      </div>`;
+
+    const grid = document.getElementById('filesGrid');
+    files.forEach((f, i) => {
+      const card = document.createElement('div');
+      card.className = 'file-card';
+      card.style.animationDelay = (i * 0.05) + 's';
+      card.innerHTML = `
+        <div class="file-icon" style="background:${fileColor(f)}">${fileIcon(f)}</div>
+        <div class="file-name">${escapeHtml(f.name)}</div>
+        <div class="file-meta">${formatSize(f.size)} · ${formatDate(f.date)}</div>
+        <div class="file-actions">
+          <button class="btn-sm" data-open="${f.id}">Открыть</button>
+          <button class="btn-sm" data-download="${f.id}">Скачать</button>
+          <button class="btn-sm danger" data-delete="${f.id}" title="Удалить">×</button>
+        </div>`;
+      grid.appendChild(card);
+    });
+
+    grid.querySelectorAll('[data-open]').forEach((b) => { b.onclick = () => openFile(+b.dataset.open); });
+    grid.querySelectorAll('[data-download]').forEach((b) => { b.onclick = () => downloadFile(+b.dataset.download); });
+    grid.querySelectorAll('[data-delete]').forEach((b) => { b.onclick = () => confirmDelete(+b.dataset.delete); });
+  }
+
+  document.getElementById('uploadBtn').onclick = openUploadModal;
+}
+
+async function openFile(id) {
+  const f = await getFile(id);
+  if (!f) return;
+  const url = URL.createObjectURL(f.blob);
+  window.open(url, '_blank');
+  setTimeout(() => URL.revokeObjectURL(url), 60000);
+}
+
+async function downloadFile(id) {
+  const f = await getFile(id);
+  if (!f) return;
+  const url = URL.createObjectURL(f.blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = f.name;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+async function confirmDelete(id) {
+  if (!confirm('Удалить этот файл?')) return;
+  await deleteFile(id);
+  toast('Файл удалён');
+  loadGrade(currentGrade);
+}
+
+function openUploadModal() {
+  const overlay = document.createElement('div');
+  overlay.className = 'modal-overlay';
+  overlay.innerHTML = `
+    <div class="modal">
+      <h2>Загрузить материалы</h2>
+      <p>Добавьте файлы для ${currentGrade} класса</p>
+      <div class="dropzone" id="dropzone">
+        <div class="dropzone-icon">☁️</div>
+        <div>Нажмите или перетащите файлы сюда</div>
+        <small>PPTX, PDF, DOCX, изображения, видео и другие</small>
+      </div>
+      <input type="file" id="fileInput" multiple hidden>
+      <div id="selectedList"></div>
+      <div class="modal-actions">
+        <button class="btn" id="cancelBtn">Отмена</button>
+        <button class="btn primary" id="saveBtn" disabled>Загрузить</button>
+      </div>
+    </div>`;
+  document.body.appendChild(overlay);
+
+  let selected = [];
+  const fileInput = overlay.querySelector('#fileInput');
+  const dropzone = overlay.querySelector('#dropzone');
+  const saveBtn = overlay.querySelector('#saveBtn');
+  const selectedList = overlay.querySelector('#selectedList');
+
+  function updateSelected() {
+    if (selected.length === 0) {
+      selectedList.textContent = '';
+      saveBtn.disabled = true;
+    } else {
+      selectedList.textContent = 'Выбрано файлов: ' + selected.length;
+      saveBtn.disabled = false;
+    }
+  }
+
+  dropzone.onclick = () => fileInput.click();
+  fileInput.onchange = () => { selected = Array.from(fileInput.files); updateSelected(); };
+  dropzone.ondragover = (e) => { e.preventDefault(); dropzone.classList.add('drag'); };
+  dropzone.ondragleave = () => dropzone.classList.remove('drag');
+  dropzone.ondrop = (e) => {
+    e.preventDefault();
+    dropzone.classList.remove('drag');
+    selected = Array.from(e.dataTransfer.files);
+    updateSelected();
+  };
+
+  const close = () => overlay.remove();
+  overlay.querySelector('#cancelBtn').onclick = close;
+  overlay.onclick = (e) => { if (e.target === overlay) close(); };
+
+  saveBtn.onclick = async () => {
+    if (selected.length === 0) return;
+    saveBtn.disabled = true;
+    saveBtn.textContent = 'Загрузка...';
+    try {
+      await addFiles(currentGrade, selected);
+      toast('Загружено файлов: ' + selected.length);
+      close();
+      loadGrade(currentGrade);
+    } catch (err) {
+      console.error(err);
+      toast('Ошибка загрузки', true);
+      saveBtn.disabled = false;
+      saveBtn.textContent = 'Загрузить';
+    }
+  };
+}
+
+async function switchGrade(grade) {
+  currentGrade = grade;
+  document.querySelectorAll('.grade-btn').forEach((b) => b.classList.toggle('active', +b.dataset.grade === grade));
+  await loadGrade(grade);
+}
+
+async function loadGrade(grade) {
+  const files = await getFilesByGrade(grade);
+  renderFiles(files);
+}
+
+(async function init() {
+  try {
+    await openDB();
+    document.querySelectorAll('.grade-btn').forEach((b) => { if (+b.dataset.grade === currentGrade) b.classList.add('active'); });
+    await loadGrade(currentGrade);
+  } catch (err) {
+    console.error('Ошибка инициализации:', err);
+    toast('Не удалось открыть базу данных', true);
+  }
+})();
+</script>
+
+</body>
+</html>
